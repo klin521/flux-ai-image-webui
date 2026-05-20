@@ -22,13 +22,11 @@ export async function POST(request: Request) {
       input,
     });
 
-    console.log("prediction:", prediction);
-
     return NextResponse.json({ ...prediction }, { status: 201 });
   } catch (error: any) {
     console.error("Replicate error:", error);
     return NextResponse.json(
-      { error: "Failed to create prediction", detail: error.message },
+      { detail: error.message },
       { status: 500 }
     );
   }
