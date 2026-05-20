@@ -91,19 +91,13 @@ const authOptions: NextAuthOptions = {
   },
   providers,
   callbacks: {
-    async session({ session, token, user }) {
-      // user表更新之后，会自动调用当前回调，更新剩余credits
-      // 通过useSession获取最新数据
-      session.user = {
-        ...session.user,
-        ...user,
-      };
-      return session;
-    },
+async session({ session, token }) {
+  if (session.user && token.sub) {
+    session.user.id = token.sub;
+  }
+  return session;
+},
 
-    async jwt({ token, user }) {
-      return token;
-    },
   },
   session: {
     maxAge: 24 * 60 * 60,
