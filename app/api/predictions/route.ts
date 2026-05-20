@@ -1,6 +1,3 @@
-import { insertGeneration } from "@/models/generation";
-import { getUserInfo, updateUserInfo } from "@/models/user";
-import to from "await-to-js";
 import { NextResponse } from "next/server";
 import Replicate from "replicate";
 
@@ -11,35 +8,27 @@ const replicate = new Replicate({
 export async function POST(request: Request) {
   const { prompts, ratio, model, isPublic, user } = await request.json();
 
-  let prediction: any = null;
-
   try {
-    const input: any = {
+    const input = {
       prompt: prompts,
       aspect_ratio: ratio || "1:1",
       output_format: "webp",
       output_quality: 80,
-      safety_tolerance: 2,
-      prompt_upsampling: true,
+      num_outputs: 1,
     };
 
-    prediction = await replicate.predictions.create({
-      version: process.env.REPLICATE_API_VERSION,
+    const prediction = await replicate.predictions.create({
+      model: "black-forest-labs/flux-schnell",
       input,
     });
 
     console.log("prediction:", prediction);
 
-    return NextResponse.json(
-      {
-        prediction,
-      },
-      { status: 201 }
-    );
-  } catch (error) {
+    return NextResponse.json({ ...prediction }, { status: 201 });
+  } catch (error: any) {
     console.error("Replicate error:", error);
     return NextResponse.json(
-      { error: "Failed to create prediction" },
+      { error: "Failed to create prediction", detail: error.message },
       { status: 500 }
     );
   }
