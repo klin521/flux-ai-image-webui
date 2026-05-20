@@ -24,7 +24,7 @@
     "@types/mdx": "^2.0.13",
     "await-to-js": "^3.0.0",
     "axios": "^1.7.2",
-    "bcrypt": "^5.1.1",
+   "bcryptjs": "^2.4.3",
     "clipboard": "^2.0.11",
     "clsx": "^2.1.1",
     "copy-to-clipboard": "^3.3.3",
