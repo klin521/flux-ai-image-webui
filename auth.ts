@@ -106,14 +106,9 @@ const authOptions: NextAuthOptions = {
     },
   },
   session: {
-    strategy: "jwt",
     maxAge: 24 * 60 * 60,
   },
 
-  jwt: {
-    secret: process.env.NEXTAUTH_SECRET,
-    maxAge: 60 * 60 * 24 * 30,
-  },
   // 通过 prisma 使用数据库
   adapter: PrismaAdapter(prisma),
   secret: process.env.NEXTAUTH_SECRET,
