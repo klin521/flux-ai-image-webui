@@ -3,33 +3,44 @@ import { getUserInfo, updateUserInfo } from "@/models/user";
 import to from "await-to-js";
 import { NextResponse } from "next/server";
 import Replicate from "replicate";
-// import { Client } from "@gradio/client";
-// import to from "await-to-js";
 
 const replicate = new Replicate({
-    auth: process.env.REPLICATE_API_TOKEN,
+  auth: process.env.REPLICATE_API_TOKEN,
 });
 
-async function getFileBlob(url: string) {
-    const response = await fetch(url);
-    const blob = await response.blob();
-
-    return blob;
-}
-
 export async function POST(request: Request) {
-    const { prompts, ratio, model, isPublic, user } = await request.json();
+  const { prompts, ratio, model, isPublic, user } = await request.json();
 
-    let prediction: any = null;
+  let prediction: any = null;
 
-    // handle replicate / fal ... api
+  try {
+    const input: any = {
+      prompt: prompts,
+      aspect_ratio: ratio || "1:1",
+      output_format: "webp",
+      output_quality: 80,
+      safety_tolerance: 2,
+      prompt_upsampling: true,
+    };
+
+    prediction = await replicate.predictions.create({
+      version: process.env.REPLICATE_API_VERSION,
+      input,
+    });
 
     console.log("prediction:", prediction);
 
     return NextResponse.json(
-        {
-            prediction,
-        },
-        { status: 201 }
+      {
+        prediction,
+      },
+      { status: 201 }
     );
+  } catch (error) {
+    console.error("Replicate error:", error);
+    return NextResponse.json(
+      { error: "Failed to create prediction" },
+      { status: 500 }
+    );
+  }
 }
